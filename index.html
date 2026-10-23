@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+<title>DockMint Desktop</title>
+<style>
+:root{
+ --bg:#111318;--sidebar:#15171d;--surface:#191c23;--surface2:#20242d;--surface3:#272c36;
+ --line:#303641;--text:#edf0f6;--muted:#969eae;--accent:#a9b7ff;--accent-ink:#171b2a;
+ --good:#8ed8ba;--warn:#f0c47a;--danger:#e89ba6;--radius:15px;--shadow:0 16px 48px #0003;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Segoe UI",Inter,system-ui,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer;color:inherit;border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:9px 12px;transition:background .15s,border-color .15s,transform .15s}
+button:hover{border-color:var(--accent);background:var(--surface3)}button:active{transform:scale(.985)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.app{display:grid;grid-template-columns:246px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--sidebar);border-right:1px solid var(--line);padding:23px 15px 16px;display:flex;flex-direction:column;gap:25px;overflow:auto}
+.brand{display:flex;align-items:center;gap:11px;padding:0 7px}
+.logo{width:43px;height:43px;flex:none;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#282d3a,#1b1f29);border:1px solid #424958;box-shadow:inset 0 1px #ffffff12}
+.brandmark{width:32px;height:32px;display:block;object-fit:contain;border-radius:7px}
+.brand strong{display:block;font-size:17px;letter-spacing:-.35px}.brand small{color:var(--muted);font-size:11px;letter-spacing:.25px}
+.navlabel{color:#788193;text-transform:uppercase;font-size:10px;letter-spacing:1.5px;padding:0 10px 9px;font-weight:700}
+.workspace-list{display:grid;gap:5px}.workspace-item{display:flex;align-items:stretch;gap:3px;min-width:0}.workspace{flex:1;min-width:0;width:100%;text-align:left;display:flex;align-items:center;gap:10px;background:transparent;border-color:transparent;padding:10px 11px;color:#c5cbd7}.workspace-delete{flex:none;width:30px;padding:0;border-color:transparent;background:transparent;color:#8992a3;opacity:.72}.workspace-delete:hover{color:#ff8f9b;border-color:#653b46;background:#32232a}.workspace-item .workspace .ws-count{margin-left:auto}
+.workspace .ws-dot{width:9px;height:9px;border-radius:3px;background:var(--dot,#697386);flex:none}
+.workspace.active{background:#262b37;border-color:#363e4e;color:var(--text)}.workspace.active .ws-dot{background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.workspace .ws-count{margin-left:auto;color:#7f899a;font-size:11px}
+.sidebar-add{width:100%;text-align:left;background:transparent;border-style:dashed;color:var(--muted);margin-top:7px}
+.sidebar-bottom{margin-top:auto;display:grid;gap:10px}
+.safe-note{border:1px solid #333a47;background:#1a1e26;border-radius:12px;padding:12px;color:#aeb7c6;font-size:11px}
+.safe-head{display:flex;gap:7px;align-items:center;font-weight:700;color:#d9deea;margin-bottom:4px}.safe-icon{color:var(--good)}
+.side-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.side-actions button{font-size:12px;padding:8px 6px}
+.main{width:100%;max-width:1600px;margin:0 auto;padding:26px clamp(18px,3.5vw,48px) 40px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:26px}
+.breadcrumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}.crumb-dot{width:4px;height:4px;background:var(--accent);border-radius:50%}
+.top-actions{display:flex;align-items:center;gap:8px}.update-control{display:flex;align-items:center;gap:7px;flex-wrap:nowrap}.update-badge{display:inline-flex;align-items:center;justify-content:center;padding:7px 9px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.55px;white-space:nowrap;border:1px solid transparent}.update-badge.up-to-date{background:#123c2b;color:#76e5a8;border-color:#226c4b}.update-badge.out-of-date{background:#4a2024;color:#ff9a9e;border-color:#85343b}.update-badge.checking,.update-badge.downloading,.update-badge.downloaded,.update-badge.error,.update-badge.dev{background:#292d36;color:#d1d6e0;border-color:#454c59}.update-action{padding:7px 9px;font-size:11px;white-space:nowrap}.update-action[hidden]{display:none!important}.update-action:disabled{opacity:.65;cursor:wait}.search-trigger{min-width:220px;display:flex;align-items:center;gap:9px;color:var(--muted);text-align:left;background:var(--surface);padding:9px 11px}
+.kbd{font:11px/1.6 "Segoe UI",sans-serif;border:1px solid #454c59;border-radius:5px;padding:0 5px;color:#aab1bf;margin-left:auto}
+.iconbtn{width:39px;height:39px;padding:0;display:grid;place-items:center;font-size:17px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px}
+.eyebrow{color:var(--accent);text-transform:uppercase;font-size:10px;letter-spacing:1.65px;font-weight:750}
+h1{font-size:clamp(28px,3vw,37px);letter-spacing:-1.3px;line-height:1.14;margin:5px 0 7px;font-weight:700}
+.subtitle{color:var(--muted);margin:0;font-size:13px}.page-actions{display:flex;gap:8px;flex-wrap:wrap}
+.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}.primary:hover{background:color-mix(in srgb,var(--accent) 85%,white);color:var(--accent-ink)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:20px;padding:22px 24px;border:1px solid #363d4a;border-radius:18px;background:radial-gradient(ellipse at 88% 5%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 42%),linear-gradient(115deg,#20242e,#191c23);margin-bottom:23px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:16%;bottom:-100px;width:210px;height:210px;border:1px solid #ffffff0a;border-radius:50%;box-shadow:0 0 0 25px #ffffff03,0 0 0 50px #ffffff02;pointer-events:none}
+.hero h2{margin:0 0 5px;font-size:17px;letter-spacing:-.2px}.hero p{margin:0;color:#aab2c1;max-width:620px;font-size:12px}
+.hero-meta{display:flex;gap:16px;margin-top:15px;flex-wrap:wrap}.hero-stat{display:flex;align-items:center;gap:7px;color:#c3c9d5;font-size:11px}.stat-num{font-weight:750;color:var(--text);font-size:13px}
+.hero-action{z-index:1;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:23px 0 12px}.section-head h2{font-size:14px;margin:0;letter-spacing:-.1px}.section-head p{color:var(--muted);font-size:11px;margin:3px 0 0}
+.layout-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+.panel{min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(145deg,#1b1e25,#181b21);padding:17px;box-shadow:0 6px 20px #0001;position:relative}
+.panel[draggable="true"]{cursor:default}.panel.dragging{opacity:.45}.panel.dragover{outline:2px dashed var(--accent);outline-offset:2px}
+.panel.files{grid-column:span 7}.panel.tasks{grid-column:span 5}.panel.notes{grid-column:span 7}.panel.apps{grid-column:span 5}
+.layout-wide .panel.files,.layout-wide .panel.notes{grid-column:span 8}.layout-wide .panel.tasks,.layout-wide .panel.apps{grid-column:span 4}
+.layout-stacked .panel{grid-column:span 12}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.panel-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px}
+.panel-symbol{width:31px;height:31px;border-radius:10px;display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb,var(--accent) 11%,#232732);border:1px solid color-mix(in srgb,var(--accent) 16%,#303642)}
+.panel-sub{color:var(--muted);font-size:11px}.panel-tools{display:flex;align-items:center;gap:6px}.tinybtn{padding:5px 8px;font-size:11px;border-radius:8px}
+.tag{font-size:10px;padding:4px 8px;border-radius:20px;background:#282d38;color:#c2cad9;border:1px solid #383f4c;white-space:nowrap}
+.filelist{display:grid;gap:7px}.file-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:#20242c;border:1px solid #2d333e;min-width:0}
+.filetype{width:33px;height:36px;flex:none;border-radius:8px;display:grid;place-items:center;font-size:16px;background:#2b303b}
+.filetype.pdf{color:#e9a5ad}.filetype.img{color:#9fd9c8}.filetype.folder{color:#e8c47f}.filetype.txt{color:#b6c2ff}
+.filemeta{min-width:0;flex:1}.filemeta strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.filemeta small{color:var(--muted);font-size:10px;display:block}
+.row-open{font-size:10px;padding:6px 8px;flex:none}.row-remove{font-size:10px;padding:6px 8px;flex:none;color:#ffb4bc;border-color:#65404a}.task-delete{font-size:10px;padding:3px 7px;flex:none;color:#ffb4bc;border-color:#65404a;margin-left:auto}.task-row{align-items:flex-start}.task-copy{min-width:0;flex:1}
+.empty-state{padding:22px 10px;text-align:center;color:var(--muted);font-size:12px}
+.task-list{display:grid;gap:5px}.task-row{display:flex;align-items:flex-start;gap:10px;padding:9px 8px;border-radius:9px}.task-row:hover{background:#222630}
+.task-row input{accent-color:var(--accent);width:15px;height:15px;margin:3px 0 0;flex:none}
+.task-copy{min-width:0;flex:1}.task-copy label{display:block;cursor:pointer;font-size:12px;line-height:1.45}.task-row.done .task-copy label{text-decoration:line-through;color:#7e8796}
+.task-details{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:10px;margin-top:4px}.priority{width:6px;height:6px;border-radius:50%;display:inline-block}.priority.high{background:var(--danger)}.priority.normal{background:var(--warn)}.priority.low{background:var(--good)}
+.add-row{display:flex;gap:7px;margin-top:12px}.add-row input{flex:1;min-width:0;background:#13161c;border:1px solid var(--line);border-radius:9px;padding:9px 10px;color:var(--text)}
+.notes-area{width:100%;min-height:145px;resize:vertical;background:#14171d;border:1px solid #2f3540;border-radius:11px;color:var(--text);padding:12px;line-height:1.65;font-size:12px}
+.hint{color:var(--muted);font-size:10px;margin:8px 0 0}
+.app-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.app-shortcut{display:flex;align-items:center;gap:9px;text-align:left;padding:10px;background:#20242c;border:1px solid #2d333e;min-width:0}
+.app-shortcut .app-icon{font-size:18px;width:24px;text-align:center}.app-shortcut span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.app-shortcut small{display:block;color:var(--muted);font-size:10px}
+.quick-tip{display:flex;gap:9px;align-items:flex-start;background:#20242c;border:1px solid #2d333e;border-radius:10px;padding:11px;margin-top:12px;color:#aeb7c5;font-size:11px}
+.tip-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;margin-top:5px;flex:none}
+.footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#737d8e;font-size:10px;margin-top:22px;padding-top:13px;border-top:1px solid #252a33}
+.toast{position:fixed;bottom:22px;right:22px;max-width:min(360px,calc(100vw - 30px));background:#e8ebff;color:#20243a;border-radius:12px;padding:12px 16px;font-weight:650;font-size:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:translateY(0)}
+.overlay{position:fixed;inset:0;background:#05070bc9;backdrop-filter:blur(6px);display:none;place-items:center;padding:18px;z-index:30}.overlay.show{display:grid}
+.dialog{width:min(600px,100%);max-height:90vh;overflow:auto;background:#1a1e26;border:1px solid #3a414f;border-radius:17px;padding:22px;box-shadow:var(--shadow)}
+.dialog h2{margin:0 0 5px;font-size:19px;letter-spacing:-.5px}.dialog .desc{color:var(--muted);margin:0 0 17px;font-size:12px}
+.field-label{display:block;color:#d8deea;font-weight:650;font-size:12px;margin:14px 0 7px}
+.dialog input,.dialog select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#11151b;color:var(--text)}
+.dialog input[type="checkbox"]{width:auto}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.color-options{display:flex;gap:10px;flex-wrap:wrap}.color-option{width:34px;height:34px;padding:0;border-radius:50%;border:2px solid #ffffff22;position:relative}.color-option.selected{outline:2px solid #fff;outline-offset:3px}
+.layout-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.layout-option{padding:10px 6px;font-size:11px;text-align:center}.layout-option.selected{border-color:var(--accent);background:#2c3140}
+.layout-mini{height:27px;display:flex;gap:3px;margin-bottom:7px;justify-content:center}.layout-mini span{background:#626d83;border-radius:3px;display:block}.layout-mini.bal span:first-child{width:28px}.layout-mini.bal span:last-child{width:17px}.layout-mini.wide span:first-child{width:34px}.layout-mini.wide span:last-child{width:12px}.layout-mini.stack{flex-direction:column;align-items:center}.layout-mini.stack span{height:7px;width:39px}
+.panel-toggles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.panel-toggle{display:flex;align-items:center;gap:8px;background:#222731;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:12px}.panel-toggle input{width:15px}
+.palette-dialog{width:min(720px,100%);padding:10px;background:#1a1e26}.palette-search{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line)}.palette-search input{border:0;background:transparent;outline:none!important;box-shadow:none;width:100%;font-size:15px}.palette-list{padding:8px;display:grid;gap:4px;max-height:55vh;overflow:auto}.palette-item{display:flex;align-items:center;gap:10px;text-align:left;border-color:transparent;background:transparent}.palette-item:hover{background:#282e39}.palette-item .picon{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:#2b303b;color:var(--accent)}.palette-item small{margin-left:auto;color:var(--muted);font-size:10px}
+.light{--bg:#f3f4f8;--sidebar:#f7f8fb;--surface:#fff;--surface2:#f1f2f7;--surface3:#e8eaf2;--line:#dce0e9;--text:#252a38;--muted:#697286;--accent-ink:#fff;--shadow:0 16px 48px #2221;background:var(--bg);color:var(--text)}
+.light .sidebar{background:var(--sidebar)}.light .workspace{color:#4e5669}.light .workspace.active{background:#e7e9f5;border-color:#d5d9eb;color:#252a38}
+.light .safe-note{background:#f0f2f8;border-color:#dfe3ec;color:#5d6678}.light .safe-head{color:#303748}
+.light .hero{background:radial-gradient(ellipse at 88% 5%,color-mix(in srgb,var(--accent) 13%,transparent),transparent 42%),linear-gradient(115deg,#e7e9f4,#f6f7fa);border-color:#dce0e9}.light .hero p{color:#5f687a}.light .hero-stat{color:#525c70}
+.light .panel{background:linear-gradient(145deg,#fff,#fafbfc)}.light .file-row,.light .app-shortcut,.light .quick-tip,.light .task-row:hover{background:#f5f6fa;border-color:#e4e7ef}
+.light .filetype{background:#e9ebf2}.light .tag{background:#f0f1f7;border-color:#dce0e9;color:#5b6375}
+.light .notes-area,.light .add-row input{background:#fff;color:#252a38;border-color:#dce0e9}
+.light .dialog{background:#fff;border-color:#dce0e9}.light .field-label{color:#343a4b}.light .dialog input,.light .dialog select{background:#fff;color:#252a38}
+.light .layout-option.selected{background:#e8eaff}.light .panel-toggle{background:#f5f6fa}.light .palette-dialog{background:#fff}.light .palette-item:hover{background:#f0f2f8}.light .palette-search{border-color:#dce0e9}
+@media(max-width:980px){.app{grid-template-columns:210px minmax(0,1fr)}.main{padding:22px 20px 30px}.search-trigger{min-width:160px}.panel.files,.panel.tasks,.panel.notes,.panel.apps{grid-column:span 12}.layout-wide .panel{grid-column:span 12}.hero{grid-template-columns:1fr}.hero-action{justify-content:flex-start}}
+@media(max-width:700px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;padding:12px 14px;gap:13px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:0 3px}.workspace-list{display:flex;overflow:auto}.workspace{width:auto;white-space:nowrap;flex:none}.sidebar .navlabel,.sidebar-bottom{display:none}.sidebar-add{width:auto;white-space:nowrap;margin:0}.topbar{align-items:flex-start;flex-direction:column}.top-actions{width:100%}.search-trigger{flex:1;min-width:0}.page-head{align-items:flex-start;flex-direction:column}.hero{padding:18px}.hero-meta{gap:12px}.main{padding:18px 14px 26px}.panel{padding:14px}.app-grid{grid-template-columns:1fr}.layout-options{grid-template-columns:1fr}.panel-toggles{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="appRoot">
+<aside class="sidebar">
+ <div class="brand">
+  <div class="logo" aria-label="DockMint logo">
+   <img class="brandmark" src="DockMint-Logo.png" alt="DockMint logo">
+  </div>
+  <div><strong>DockMint</strong><small>Make room to focus.</small></div>
+ </div>
+ <div>
+  <div class="navlabel">Workspaces</div>
+  <div class="workspace-list" id="workspaceList"></div>
+  <button class="sidebar-add" id="newWorkspaceBtn">＋ New workspace</button>
+ </div>
+ <div class="sidebar-bottom">
+  <div class="side-actions"><button id="customizeBtn">⚙ Customize</button><button id="themeBtn">◐ Appearance</button></div>
+  <div class="safe-note"><div class="safe-head"><span class="safe-icon">●</span> Local &amp; private</div>File links stay on this PC. DockMint can open selected files and folders but cannot modify or delete them.</div>
+ </div>
+</aside>
+<main class="main">
+ <header class="topbar">
+  <div class="breadcrumb"><span>DockMint</span><span>›</span><span id="crumbName">My Projects</span><span class="crumb-dot"></span><span>Local workspace</span></div>
+  <div class="top-actions">
+   <div class="update-control" aria-label="App update status"><span id="updateBadge" class="update-badge checking" role="status" aria-live="polite">CHECKING</span><button id="updateAction" class="update-action" hidden>Download latest</button></div>
+   <button class="search-trigger" id="searchBtn" aria-label="Search DockMint"><span>⌕</span><span>Search anything…</span><span class="kbd">Ctrl K</span></button>
+   <button class="iconbtn" id="helpBtn" title="How this demo works" aria-label="Help">?</button>
+  </div>
+ </header>
+ <div class="page-head">
+  <div><div class="eyebrow">Your space, organized</div><h1 id="workspaceTitle">My Projects</h1><p class="subtitle" id="workspaceSubtitle">Keep the pieces of a project together.</p></div>
+  <div class="page-actions"><button id="quickAddBtn">＋ Quick add</button><button class="primary" id="customizeTopBtn">Customize workspace</button></div>
+ </div>
+ <section class="hero" aria-label="Workspace overview">
+  <div><h2 id="heroTitle">A little more focus. A lot less searching.</h2><p id="heroDesc">Keep your next steps, useful files, notes, and favorite tools together so you can get back to work faster.</p>
+   <div class="hero-meta"><div class="hero-stat"><span class="stat-num" id="openTaskStat">3</span><span>open tasks</span></div><div class="hero-stat"><span class="stat-num" id="fileStat">3</span><span>sample items</span></div><div class="hero-stat"><span class="stat-num" id="doneStat">0</span><span>completed today</span></div></div>
+  </div>
+  <div class="hero-action"><button class="primary" id="focusBtn">View my tasks ↗</button></div>
+ </section>
+ <div class="section-head"><div><h2>Your workspace</h2><p>Keep the useful things close at hand.</p></div><span class="panel-sub" id="workspaceStatus">Saved on this PC</span></div>
+ <section class="layout-grid" id="panelGrid">
+  <article class="panel files" data-panel="files" draggable="true">
+   <div class="panel-head"><div class="panel-title"><div class="panel-symbol">▤</div>Project files</div><div class="panel-tools"><button class="tinybtn" id="addFileBtn" title="Link a file">＋ File</button><button class="tinybtn" id="addFolderBtn" title="Link a folder">＋ Folder</button><button class="tinybtn panel-menu" data-panel-menu="files" aria-label="Panel options">•••</button></div></div>
+   <div class="filelist" id="fileList"></div><p class="hint">Links point to your original files and folders. Nothing is copied or changed.</p>
+  </article>
+  <article class="panel tasks" data-panel="tasks" draggable="true">
+   <div class="panel-head"><div class="panel-title"><div class="panel-symbol">✓</div>Tasks</div><div class="panel-tools"><span class="panel-sub" id="taskCount">3 open</span><button class="tinybtn panel-menu" data-panel-menu="tasks" aria-label="Panel options">•••</button></div></div>
+   <div class="task-list" id="taskList"></div>
+   <form class="add-row" id="taskForm"><input id="taskInput" placeholder="Add a task…" maxlength="100" aria-label="New task"><button class="primary" type="submit">Add</button></form>
+  </article>
+  <article class="panel notes" data-panel="notes" draggable="true">
+   <div class="panel-head"><div class="panel-title"><div class="panel-symbol">✎</div>Quick notes</div><div class="panel-tools"><span class="tag">Workspace note</span><button class="tinybtn panel-menu" data-panel-menu="notes" aria-label="Panel options">•••</button></div></div>
+   <textarea class="notes-area" id="notesArea" maxlength="3000" placeholder="Capture an idea, reminder, or detail…"></textarea>
+   <p class="hint" id="notesHint">Notes stay in this open page only and reset when refreshed.</p>
+  </article>
+  <article class="panel apps" data-panel="apps" draggable="true">
+   <div class="panel-head"><div class="panel-title"><div class="panel-symbol">▦</div>Quick launch</div><div class="panel-tools"><button class="tinybtn" id="addAppBtn" type="button">＋ Add app</button><button class="tinybtn panel-menu" data-panel-menu="apps" aria-label="Panel options">•••</button></div></div>
+   <div class="app-grid" id="appGrid"></div>
+   <div class="quick-tip"><span class="tip-dot"></span><span><strong>Small tip</strong><br>Use one workspace per part of your life—school, game development, or personal projects.</span></div>
+  </article>
+ </section>
+ <div class="footer"><span>DockMint Desktop</span><span>Local-only workspace · original files are never modified</span></div>
+</main>
+</div>
+
+<div class="overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+ <div class="dialog">
+  <h2 id="settingsTitle">Make this workspace yours</h2><p class="desc" id="settingsDesc">Adjust the look and choose which panels are useful to you.</p>
+  <label class="field-label" for="themeSelect">Appearance</label><select id="themeSelect"><option value="dark">Midnight</option><option value="light">Light</option></select>
+  <span class="field-label">Accent color</span>
+  <div class="color-options" id="colorOptions">
+   <button class="color-option selected" data-color="#a9b7ff" style="background:#a9b7ff" aria-label="Lavender blue" title="Lavender blue"></button>
+   <button class="color-option" data-color="#8bd5c2" style="background:#8bd5c2" aria-label="Sea glass" title="Sea glass"></button>
+   <button class="color-option" data-color="#e9a9c8" style="background:#e9a9c8" aria-label="Rose" title="Rose"></button>
+   <button class="color-option" data-color="#edc47b" style="background:#edc47b" aria-label="Amber" title="Amber"></button>
+   <button class="color-option" data-color="#b8d39b" style="background:#b8d39b" aria-label="Sage" title="Sage"></button>
+   <button class="color-option" data-color="#d8deea" style="background:#d8deea" aria-label="Silver" title="Silver"></button>
+  </div>
+  <span class="field-label">Layout</span>
+  <div class="layout-options">
+   <button class="layout-option selected" data-layout="balanced"><div class="layout-mini bal"><span></span><span></span></div>Balanced</button>
+   <button class="layout-option" data-layout="wide"><div class="layout-mini wide"><span></span><span></span></div>More file space</button>
+   <button class="layout-option" data-layout="stacked"><div class="layout-mini stack"><span></span><span></span><span></span></div>One column</button>
+  </div>
+  <span class="field-label">Show panels</span>
+  <div class="panel-toggles">
+   <label class="panel-toggle"><input type="checkbox" data-show-panel="files" checked> Project files</label>
+   <label class="panel-toggle"><input type="checkbox" data-show-panel="tasks" checked> Tasks</label>
+   <label class="panel-toggle"><input type="checkbox" data-show-panel="notes" checked> Quick notes</label>
+   <label class="panel-toggle"><input type="checkbox" data-show-panel="apps" checked> Quick launch</label>
+  </div>
+  <p class="hint">Drag a panel by its card to rearrange it. Changes are saved locally on this PC.</p>
+  <div class="dialog-actions"><button id="cancelSettings">Cancel</button><button class="primary" id="applySettings">Apply changes</button></div>
+ </div>
+</div>
+<div class="overlay" id="paletteOverlay" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
+ <div class="dialog palette-dialog">
+  <div class="palette-search"><span>⌕</span><input id="paletteInput" aria-labelledby="paletteTitle" placeholder="Search tasks, linked files, notes…" autocomplete="off"><span class="kbd">ESC</span></div>
+  <h2 id="paletteTitle" style="font-size:12px;color:var(--muted);padding:8px 12px 0">Quick find</h2>
+  <div class="palette-list" id="paletteList"></div>
+  <p class="hint" style="padding:0 12px 8px">Search covers DockMint workspaces, tasks, notes, and linked items. It does not search your entire computer.</p>
+ </div>
+</div>
+<div class="overlay" id="quickOverlay" role="dialog" aria-modal="true" aria-labelledby="quickTitle">
+ <div class="dialog"><h2 id="quickTitle">Quick add</h2><p class="desc">Add a task or make a workspace for a different part of your life.</p>
+  <label class="field-label" for="quickType">What would you like to add?</label><select id="quickType"><option value="task">Task</option><option value="workspace">Workspace</option></select>
+  <label class="field-label" for="quickInput">Name</label><input id="quickInput" maxlength="100" placeholder="e.g. Finish project outline">
+  <div class="dialog-actions"><button id="cancelQuick">Cancel</button><button class="primary" id="applyQuick">Add</button></div>
+ </div>
+</div>
+<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+ <div class="dialog"><h2 id="helpTitle">How this prototype works</h2><p class="desc">This is the DockMint desktop app. It stores only its own workspace data.</p>
+ <ul style="color:var(--muted);font-size:12px;padding-left:19px;line-height:1.9">
+  <li>Switch workspaces in the left sidebar.</li><li>Use Customize workspace to change colors, layout, and visible panels.</li><li>Drag a panel card to change its order.</li><li>Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to search sample files and tasks.</li><li>Tasks, notes, and customization are saved locally and remain after restarting DockMint.</li>
+  <li>This version cannot browse, open, edit, or delete real files, and it does not launch applications.</li>
+ </ul><div class="dialog-actions"><button class="primary" id="closeHelp">Got it</button></div></div>
+</div>
+<div class="overlay" id="panelOverlay" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+ <div class="dialog"><h2 id="panelTitle">Panel options</h2><p class="desc" id="panelDesc">Show or hide this panel.</p><label class="panel-toggle"><input type="checkbox" id="panelVisibleCheck" checked> Show this panel</label><div class="dialog-actions"><button id="cancelPanel">Cancel</button><button class="primary" id="applyPanel">Apply</button></div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(()=> {
+const $=id=>document.getElementById(id);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const initial=[
+ {name:"My Projects",dot:"#a9b7ff",subtitle:"Keep the pieces of a project together.",tasks:[
+  {text:"Sketch the next project idea",done:false,priority:"normal"},{text:"Organize project references",done:false,priority:"low"},{text:"Review this week's priorities",done:false,priority:"high"}],
+  files:[],apps:[],notes:"Project idea:\n\n• Keep each project's tools and information together.\n• Make it quick to find what I need."},
+ {name:"School",dot:"#8bd5c2",subtitle:"Assignments, study notes, and useful links.",tasks:[{text:"Review today's notes",done:false,priority:"normal"},{text:"Start the next assignment",done:false,priority:"high"}],files:[],apps:[],notes:"Remember:\n\n• Break bigger assignments into small steps.\n• Keep reference material together."},
+ {name:"Game Dev",dot:"#edc47b",subtitle:"A home for ideas, builds, and creative experiments.",tasks:[{text:"Write down the core game loop",done:false,priority:"high"},{text:"Collect UI references",done:true,priority:"low"}],files:[],apps:[],notes:"Prototype ideas:\n\n• Keep the first version small.\n• Make the next action obvious."}
+];
+const STORAGE_KEY="dockmint-desktop-state-v1";
+let restored=null;
+try { restored=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"); } catch (_) { restored=null; }
+let workspaces=Array.isArray(restored?.workspaces)&&restored.workspaces.length?restored.workspaces:clone(initial),
+ active=Number.isInteger(restored?.active)&&restored.active>=0&&restored.active<workspaces.length?restored.active:0,
+ theme=restored?.theme==="light"?"light":"dark",
+ accent=["#a9b7ff","#8bd5c2","#e9a9c8","#edc47b","#b8d39b","#d8deea"].includes(restored?.accent)?restored.accent:"#a9b7ff",
+ layout=["balanced","wide","stacked"].includes(restored?.layout)?restored.layout:"balanced",
+ visible={files:true,tasks:true,notes:true,apps:true,...(restored?.visible||{})},
+ panelOrder=Array.isArray(restored?.panelOrder)?restored.panelOrder.filter(x=>["files","tasks","notes","apps"].includes(x)):["files","tasks","notes","apps"],
+ selectedPanel="files",modalOrigin=null;
+function saveState(){
+ try { localStorage.setItem(STORAGE_KEY,JSON.stringify({workspaces,active,theme,accent,layout,visible,panelOrder})); }
+ catch (_) { /* If local storage is unavailable, the app remains usable for this session. */ }
+}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
+function showOverlay(id){$(id).classList.add("show");const input=$(id).querySelector("input:not([type=checkbox]),textarea,select");if(input)setTimeout(()=>input.focus(),20)}
+function closeOverlay(id){$(id).classList.remove("show")}
+function applyTheme(){document.body.classList.toggle("light",theme==="light");document.documentElement.style.setProperty("--accent",accent);document.documentElement.style.setProperty("--accent-ink",theme==="light"?"#fff":"#171b2a");$("themeSelect").value=theme;document.querySelectorAll("[data-color]").forEach(b=>b.classList.toggle("selected",b.dataset.color===accent))}
+function renderWorkspaces(){$("workspaceList").innerHTML=workspaces.map((w,i)=>`<div class="workspace-item"><button class="workspace ${i===active?"active":""}" data-index="${i}" ${i===active?'aria-current="page"':""}><span class="ws-dot" style="--dot:${w.dot}"></span><span>${esc(w.name)}</span><span class="ws-count">${w.tasks.filter(t=>!t.done).length}</span></button><button class="workspace-delete" data-delete-workspace="${i}" title="Delete ${esc(w.name)} workspace" aria-label="Delete ${esc(w.name)} workspace" ${workspaces.length===1?"disabled":""}>×</button></div>`).join("")}
+function renderTasks(){const w=workspaces[active];$("taskList").innerHTML=w.tasks.length?w.tasks.map((t,i)=>`<div class="task-row ${t.done?"done":""}"><input type="checkbox" id="task-${i}" data-task="${i}" ${t.done?"checked":""} aria-label="Complete ${esc(t.text)}"><div class="task-copy"><label for="task-${i}">${esc(t.text)}</label><div class="task-details"><span class="priority ${t.priority}"></span><span>${t.priority==="high"?"Priority":t.priority==="low"?"Whenever":"Next up"}</span></div></div><button class="task-delete" data-delete-task="${i}" title="Delete task" aria-label="Delete task: ${esc(t.text)}">Delete</button></div>`).join(""):'<div class="empty-state">No tasks yet. Add one small next step.</div>';$("taskCount").textContent=`${w.tasks.filter(t=>!t.done).length} open`}
+function renderApps(){const apps=workspaces[active].apps||(workspaces[active].apps=[]);$("appGrid").innerHTML=apps.length?apps.map((a,i)=>`<div class="app-shortcut"><button class="app-launch" data-launch-app="${i}" title="Launch ${esc(a.name)}"><span class="app-icon">↗</span><span>${esc(a.name)}<small>${esc(a.path)}</small></span></button><button class="row-remove" data-remove-app="${i}" title="Remove shortcut" aria-label="Remove ${esc(a.name)} shortcut">×</button></div>`).join(""):'<div class="empty-state">No app shortcuts yet. Click + Add app to choose an application or shortcut.</div>'}
+function renderFiles(){const files=workspaces[active].files;$("fileList").innerHTML=files.length?files.map((f,i)=>`<div class="file-row"><div class="filetype ${f.kind==='folder'?'folder':'pdf'}">${esc(f.icon|| (f.kind==='folder'?'DIR':'FILE'))}</div><div class="filemeta"><strong>${esc(f.name)}</strong><small>${esc(f.path||f.meta||'Linked item')}</small></div><button class="row-open" data-open-file="${i}">Open</button><button class="row-remove" data-remove-file="${i}" title="Remove shortcut" aria-label="Remove shortcut: ${esc(f.name)}">Remove</button></div>`).join(""):'<div class="empty-state">No linked files yet. Choose + File or + Folder to add one.</div>'}
+function render(){const w=workspaces[active];$("workspaceTitle").textContent=w.name;$("workspaceSubtitle").textContent=w.subtitle;$("crumbName").textContent=w.name;$("heroTitle").textContent=`Welcome back to ${w.name}.`;$("heroDesc").textContent="Your project's next steps, notes, linked files, and tools—together in one space.";$("openTaskStat").textContent=w.tasks.filter(t=>!t.done).length;$("fileStat").textContent=w.files.length;$("doneStat").textContent=w.tasks.filter(t=>t.done).length;renderWorkspaces();renderTasks();renderFiles();renderApps();$("notesArea").value=w.notes;$("notesHint").textContent="Saved locally on this PC, inside DockMint app data.";applyVisibility();applyLayout();applyPanelOrder();saveState()}
+function applyVisibility(){document.querySelectorAll("[data-panel]").forEach(p=>{p.style.display=visible[p.dataset.panel]?"":"none"});document.querySelectorAll("[data-show-panel]").forEach(c=>c.checked=visible[c.dataset.showPanel])}
+function applyLayout(){const g=$("panelGrid");g.classList.remove("layout-wide","layout-stacked");if(layout==="wide")g.classList.add("layout-wide");if(layout==="stacked")g.classList.add("layout-stacked");document.querySelectorAll("[data-layout]").forEach(b=>b.classList.toggle("selected",b.dataset.layout===layout))}
+function applyPanelOrder(){const grid=$("panelGrid");panelOrder.forEach(key=>{const p=grid.querySelector(`[data-panel="${key}"]`);if(p)grid.appendChild(p)})}
+function openSettings(){applyTheme();applyLayout();showOverlay("settingsOverlay")}
+$("workspaceList").addEventListener("click",e=>{const del=e.target.closest("[data-delete-workspace]");if(del){const i=Number(del.dataset.deleteWorkspace);if(workspaces.length<=1){toast("Keep at least one workspace in DockMint.");return}const ws=workspaces[i];if(!ws)return;if(!confirm(`Delete the “${ws.name}” workspace from DockMint? Its tasks, notes, and shortcuts will be removed from DockMint, but your original files will not be changed.`))return;workspaces.splice(i,1);if(active===i)active=Math.max(0,i-1);else if(active>i)active--;render();toast("Workspace deleted from DockMint.");return}const b=e.target.closest("[data-index]");if(b){active=Number(b.dataset.index);render()}});
+function openNewWorkspace(){ $("quickType").value="workspace";$("quickInput").value="";$("quickTitle").textContent="New workspace";$("quickInput").placeholder="Enter a workspace name";showOverlay("quickOverlay") }
+$("newWorkspaceBtn").addEventListener("click",openNewWorkspace);
+$("taskForm").addEventListener("submit",e=>{e.preventDefault();const v=$("taskInput").value.trim();if(!v)return;workspaces[active].tasks.push({text:v,done:false,priority:"normal"});$("taskInput").value="";render();toast("Task added to this workspace.")});
+$("taskList").addEventListener("change",e=>{if(e.target.matches("[data-task]")){workspaces[active].tasks[Number(e.target.dataset.task)].done=e.target.checked;render();toast(e.target.checked?"Task completed.":"Task reopened.")}});
+$("taskList").addEventListener("click",e=>{const b=e.target.closest("[data-delete-task]");if(!b)return;const i=Number(b.dataset.deleteTask);const task=workspaces[active].tasks[i];if(!task)return;workspaces[active].tasks.splice(i,1);render();toast("Task deleted from DockMint.")});
+$("notesArea").addEventListener("input",e=>{workspaces[active].notes=e.target.value;saveState()});
+async function addLinkedItem(kind){try{const item=kind==="folder"?await window.dockmintAPI.chooseFolder():await window.dockmintAPI.chooseFile();if(!item)return;const list=workspaces[active].files;if(list.some(f=>f.path===item.path)){toast("That item is already linked in this workspace.");return}list.push({name:item.name,path:item.path,kind:item.kind,icon:item.ext|| (kind==="folder"?"DIR":"FILE"),meta:item.path});render();toast(kind==="folder"?"Folder linked.":"File linked.")}catch(err){toast(err.message||"Could not add that item.")}}
+$("addFileBtn").addEventListener("click",()=>addLinkedItem("file"));
+$("addFolderBtn").addEventListener("click",()=>addLinkedItem("folder"));
+$("addAppBtn").addEventListener("click",async()=>{try{const item=await window.dockmintAPI.chooseFile();if(!item)return;const apps=workspaces[active].apps||(workspaces[active].apps=[]);if(apps.some(a=>a.path===item.path)){toast("That shortcut is already in this workspace.");return}apps.push({name:item.name.replace(/\.[^.]+$/,"")||item.name,path:item.path});render();toast("App shortcut added.")}catch(err){toast(err.message||"Could not add shortcut.")}});
+$("appGrid").addEventListener("click",async e=>{const remove=e.target.closest("[data-remove-app]");if(remove){const i=Number(remove.dataset.removeApp);const apps=workspaces[active].apps||[];if(!apps[i])return;apps.splice(i,1);render();toast("Shortcut removed. The application was not deleted.");return}const launch=e.target.closest("[data-launch-app]");if(!launch)return;const item=(workspaces[active].apps||[])[Number(launch.dataset.launchApp)];if(!item)return;try{await window.dockmintAPI.openPath(item.path);toast("Launching app…")}catch(err){toast(err.message||"Could not launch this shortcut.")}});
+$("fileList").addEventListener("click",async e=>{const remove=e.target.closest("[data-remove-file]");if(remove){const i=Number(remove.dataset.removeFile);if(!workspaces[active].files[i])return;workspaces[active].files.splice(i,1);render();toast("Shortcut removed. Your original file was not changed.");return}const b=e.target.closest("[data-open-file]");if(!b)return;const item=workspaces[active].files[Number(b.dataset.openFile)];if(!item||!item.path){toast("This is an old example entry. Remove it and add the real file again.");return}try{await window.dockmintAPI.openPath(item.path);toast("Opening selected item…")}catch(err){toast(err.message||"Could not open that item.")}});
+
+$("customizeBtn").addEventListener("click",openSettings);$("customizeTopBtn").addEventListener("click",openSettings);
+$("themeBtn").addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";applyTheme();saveState();toast(`${theme==="dark"?"Midnight":"Light"} appearance enabled.`)});
+$("themeSelect").addEventListener("change",e=>{theme=e.target.value;applyTheme()});
+$("colorOptions").addEventListener("click",e=>{const b=e.target.closest("[data-color]");if(b){accent=b.dataset.color;applyTheme()}});
+document.querySelectorAll("[data-layout]").forEach(b=>b.addEventListener("click",()=>{layout=b.dataset.layout;applyLayout()}));
+$("applySettings").addEventListener("click",()=>{document.querySelectorAll("[data-show-panel]").forEach(c=>visible[c.dataset.showPanel]=c.checked);applyVisibility();applyLayout();closeOverlay("settingsOverlay");toast("Workspace appearance updated for this session.")});
+$("cancelSettings").addEventListener("click",()=>closeOverlay("settingsOverlay"));
+$("searchBtn").addEventListener("click",openSearch);
+function openSearch(){$("paletteInput").value="";renderSearch("");showOverlay("paletteOverlay")}
+function renderSearch(q){q=q.trim().toLowerCase();const w=workspaces[active],items=[];workspaces.forEach((ws,wi)=>{if(ws.name.toLowerCase().includes(q)&&q)items.push({type:"Workspace",icon:"▦",title:ws.name,detail:"Switch workspace",action:()=>{active=wi;render();closeOverlay("paletteOverlay")}});ws.tasks.forEach((t,ti)=>{if(!q||t.text.toLowerCase().includes(q))items.push({type:"Task",icon:t.done?"✓":"○",title:t.text,detail:ws.name+(t.done?" · completed":""),action:()=>{active=wi;render();closeOverlay("paletteOverlay");$("taskInput").focus()}})});ws.files.forEach(f=>{if(!q||f.name.toLowerCase().includes(q))items.push({type:"Sample file",icon:f.icon,title:f.name,detail:ws.name+" · linked item",action:()=>{active=wi;render();closeOverlay("paletteOverlay");toast("Use Open in Project files to open this item.")}})});if(ws.notes.toLowerCase().includes(q)&&q)items.push({type:"Note",icon:"✎",title:"Workspace notes",detail:ws.name,action:()=>{active=wi;render();closeOverlay("paletteOverlay");$("notesArea").focus()}})});
+const filtered=items.filter(x=>!q||x.title.toLowerCase().includes(q)||x.detail.toLowerCase().includes(q));$("paletteList").innerHTML=filtered.length?filtered.slice(0,24).map((x,i)=>`<button class="palette-item" data-result="${i}"><span class="picon">${esc(x.icon)}</span><span>${esc(x.title)}</span><small>${esc(x.type)} · ${esc(x.detail)}</small></button>`).join(""):'<div class="empty-state">No matches. Try another word.</div>';Array.from($("paletteList").querySelectorAll("[data-result]")).forEach((b,i)=>b.addEventListener("click",()=>filtered[i].action()))}
+$("paletteInput").addEventListener("input",e=>renderSearch(e.target.value));
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openSearch()}if(e.key==="Escape"){["settingsOverlay","paletteOverlay","quickOverlay","helpOverlay","panelOverlay"].forEach(closeOverlay)}});
+$("quickAddBtn").addEventListener("click",()=>{$("quickType").value="task";$("quickInput").value="";showOverlay("quickOverlay")});
+$("cancelQuick").addEventListener("click",()=>closeOverlay("quickOverlay"));
+$("applyQuick").addEventListener("click",()=>{const val=$("quickInput").value.trim();if(!val){$("quickInput").focus();toast("Please enter a name first.");return}if($("quickType").value==="task"){workspaces[active].tasks.push({text:val,done:false,priority:"normal"});render();toast("Task added.")}else{if(workspaces.some(w=>w.name.trim().toLowerCase()===val.toLowerCase())){toast("A workspace with that name already exists.");$("quickInput").focus();return}workspaces.push({name:val,dot:["#a9b7ff","#8bd5c2","#e9a9c8","#edc47b"][workspaces.length%4],subtitle:"A fresh space for your work.",tasks:[],files:[],apps:[],notes:""});active=workspaces.length-1;render();toast("Workspace "+val+" created and saved.")}closeOverlay("quickOverlay")});
+$("quickType").addEventListener("change",e=>{$("quickInput").placeholder=e.target.value==="task"?"e.g. Finish project outline":"e.g. School or Game Dev";$("quickTitle").textContent=e.target.value==="task"?"Quick add":"New workspace"});
+$("focusBtn").addEventListener("click",()=>{if(!visible.tasks){visible.tasks=true;render()}document.querySelector('[data-panel="tasks"]').scrollIntoView({behavior:"smooth",block:"center"});$("taskInput").focus()});
+$("helpBtn").addEventListener("click",()=>showOverlay("helpOverlay"));$("closeHelp").addEventListener("click",()=>closeOverlay("helpOverlay"));
+document.querySelectorAll(".overlay").forEach(o=>o.addEventListener("click",e=>{if(e.target===o)closeOverlay(o.id)}));
+$("panelGrid").addEventListener("click",e=>{const b=e.target.closest("[data-panel-menu]");if(!b)return;selectedPanel=b.dataset.panelMenu;$("panelTitle").textContent=selectedPanel[0].toUpperCase()+selectedPanel.slice(1)+" panel";$("panelDesc").textContent="Choose whether this panel appears in your workspace."; $("panelVisibleCheck").checked=visible[selectedPanel];showOverlay("panelOverlay")});
+$("cancelPanel").addEventListener("click",()=>closeOverlay("panelOverlay"));
+$("applyPanel").addEventListener("click",()=>{visible[selectedPanel]=$("panelVisibleCheck").checked;applyVisibility();saveState();closeOverlay("panelOverlay");toast("Panel visibility updated.")});
+let dragged=null;
+$("panelGrid").addEventListener("dragstart",e=>{const p=e.target.closest(".panel");if(!p)return;dragged=p;p.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",p.dataset.panel)});
+$("panelGrid").addEventListener("dragover",e=>{e.preventDefault();const target=e.target.closest(".panel");if(target&&target!==dragged)target.classList.add("dragover")});
+$("panelGrid").addEventListener("dragleave",e=>{const p=e.target.closest(".panel");if(p)p.classList.remove("dragover")});
+$("panelGrid").addEventListener("drop",e=>{e.preventDefault();const target=e.target.closest(".panel");if(!dragged||!target||target===dragged)return;target.classList.remove("dragover");const rect=target.getBoundingClientRect();if(e.clientY>rect.top+rect.height/2)target.after(dragged);else target.before(dragged);panelOrder=Array.from($("panelGrid").querySelectorAll(".panel")).map(p=>p.dataset.panel);saveState();toast("Panel order saved.")});
+$("panelGrid").addEventListener("dragend",()=>{document.querySelectorAll(".panel").forEach(p=>p.classList.remove("dragging","dragover"));dragged=null});
+render();
+})();
+</script>
+<script src="updater-ui.js"></script>
+</body></html>

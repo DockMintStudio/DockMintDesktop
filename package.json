@@ -1,0 +1,56 @@
+{
+  "name": "dockmint-desktop",
+  "version": "0.1.0",
+  "description": "A privacy-first desktop workspace for project tasks, notes, and real file and folder shortcuts.",
+  "main": "main.js",
+  "author": "DockMint",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.dockmint.desktop",
+    "productName": "DockMint Desktop",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "updater-ui.js",
+      "package.json",
+      "DockMint.ico",
+      "DockMint-Logo.png"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "DockMint-Setup-${version}.${ext}",
+      "icon": "DockMint.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "DockMint Desktop"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "DockMintStudio",
+        "repo": "DockMintDesktop"
+      }
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2"
+  }
+}
