@@ -1,7 +1,7 @@
 {
   "name": "dockmint-desktop",
-  "version": "0.1.0",
-  "description": "A privacy-first desktop workspace for project tasks, notes, and real file and folder shortcuts.",
+  "version": "0.1.1",
+  "description": "A privacy-first desktop workspace with customizable layouts and optional local/cloud AI.",
   "main": "main.js",
   "author": "DockMint",
   "license": "UNLICENSED",
